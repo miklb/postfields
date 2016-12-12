@@ -54,7 +54,7 @@ class PostFields	 extends Plugin
 
 					$ui = new FormUI('postfields');
 					$ui->append('static', 'typelabel', _t('Add this code to a plugin to implement the currently configured fields.'));
-					$ui->append('textarea', 'plugincode', 'null:null', _t('Plugin code:'))->value = $this->get_code();
+					$ui->append(\Habari\FormControlTextarea::create('plugincode', 'null:null')->label('Plugin code:'));
 					$ui->out();
 
 					break;
