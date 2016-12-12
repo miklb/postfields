@@ -56,16 +56,16 @@ class postfields extends Plugin
 					$ui->append('static', 'typelabel', _t('Add this code to a plugin to implement the currently configured fields.'));
 					$ui->append('textarea', 'plugincode', 'null:null', _t('Plugin code:'))->value = $this->get_code();
 					$ui->out();
-					
+
 					break;
 
 				default:
 					$types = array_flip(Post::list_active_post_types());
 					$key = substr($action, 7);
-			
+
 					$ui = new FormUI('postfields');
 					$ui->append('static', 'typelabel', _t('Adding fields to the "%s" post type.', array($types[$key])));
-					$ui->append('textmulti', 'fields', 'postfields__fields_' . $key, 'Additional Fields:');
+					$ui->append(\Habari\FormControlTextmulti::create('fields', 'postfields__fields_1')->label('Additional Fields:'));
 					$ui->append('submit', 'submit', 'Submit');
 					$ui->out();
 			}
@@ -80,22 +80,22 @@ class postfields extends Plugin
 	**/
 	public function action_form_publish($form, $post)
 	{
-		$fields = Options::get('postfields__fields_' . $post->content_type);
+		$fields = Options::get('postfields__fields_1' . $post->content_type);
 		if(!is_array($fields) || count($fields) == 0) {
 			return;
 		}
 		$output = '';
 		$control_id = 0;
-		$postfields = $form->publish_controls->append('fieldset', 'postfields', 'Additional Fields');
+		$postfields = $form->publish_controls->append( FormControlFieldset::create('postfields_1')->set_caption(_t( 'Additional Fields' )) );
 		foreach($fields as $field) {
 			$control_id = md5($field);
-			$fieldname = "postfield_{$control_id}";
+			$fieldname = "postfield_1{$control_id}";
 			$customfield = $postfields->append('text', $fieldname, 'null:null', $field);
 			$customfield->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
 			$customfield->template = 'tabcontrol_text';
 		}
 	}
-	
+
 
 	/**
 	* Modify a post before it is updated
@@ -134,7 +134,7 @@ class postfields extends Plugin
 			}
 			$fieldlist = implode(', ', $fieldlist);
 			$cases_form .= "\t\t\tcase {$id}:\n\t\t\t\t\$fields = array({$fieldlist});\n\t\t\t\tbreak;\n";
-		}		
+		}
 
 		$code = <<< PLUGIN_CODE_1
 
@@ -159,7 +159,7 @@ class postfields extends Plugin
 			\$customfield->template = 'tabcontrol_text';
 		}
 	}
-	
+
 
 	/**
 	* Modify a post before it is updated
@@ -184,11 +184,11 @@ class postfields extends Plugin
 
 PLUGIN_CODE_1;
 
-		return $code;		
+		return $code;
 	}
-	
-		
- 
+
+
+
 
 }
 ?>
