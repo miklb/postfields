@@ -4,7 +4,7 @@ namespace Habari;
 * Post Fields - A plugin to display additional fields on the publish page
 * @package postfields
 **/
-class PostFields extends Plugin
+class PostFields	 extends Plugin
 {
 
 
@@ -105,13 +105,13 @@ class PostFields extends Plugin
 	*/
 	public function action_publish_post($post, $form)
 	{
-		$fields = Options::get('postfields__fields_' . $post->content_type);
+		$fields = Options::get('postfields__fields_1' . $post->content_type);
 		if(!is_array($fields) || count($fields) == 0) {
 			return;
 		}
 		foreach($fields as $field) {
 			$control_id = md5($field);
-			$fieldname = "postfield_{$control_id}";
+			$fieldname = "postfield_1{$control_id}";
 			$customfield = $form->$fieldname;
 			$post->info->{$field} = $customfield->value;
 		}
@@ -124,7 +124,7 @@ class PostFields extends Plugin
 		$types = Post::list_active_post_types();
 		unset($types['any']);
 		foreach($types as $type => $id) {
-			$fields = Options::get('postfields__fields_' . $id);
+			$fields = Options::get('postfields__fields_1' . $id);
 			if(!is_array($fields) || count($fields) == 0) {
 				continue;
 			}
