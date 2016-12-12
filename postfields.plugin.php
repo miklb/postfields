@@ -80,7 +80,7 @@ class PostFields	 extends Plugin
 	**/
 	public function action_form_publish($form, $post)
 	{
-		$fields = Options::get('postfields__fields_1' . $post->content_type);
+		$fields = Options::get('postfields__fields_' . $post->content_type);
 		if(!is_array($fields) || count($fields) == 0) {
 			return;
 		}
@@ -89,8 +89,8 @@ class PostFields	 extends Plugin
 		$postfields = $form->publish_controls->append( FormControlFieldset::create('postfields_1')->set_caption(_t( 'Additional Fields' )) );
 		foreach($fields as $field) {
 			$control_id = md5($field);
-			$fieldname = "postfield_1{$control_id}";
-			$customfield = $postfields->append('text', $fieldname, 'null:null', $field);
+			$fieldname = "postfield_fields_1{$control_id}";
+			$customfield = $postfields->append(FormControlText::create($fieldname, 'null:null'));
 			$customfield->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
 			$customfield->template = 'tabcontrol_text';
 		}
