@@ -4,7 +4,7 @@ namespace Habari;
 * Post Fields - A plugin to display additional fields on the publish page
 * @package postfields
 **/
-class postfields extends Plugin
+class PostFields extends Plugin
 {
 
 
