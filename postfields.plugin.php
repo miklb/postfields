@@ -90,7 +90,7 @@ class PostFields	 extends Plugin
 		foreach($fields as $field) {
 			$control_id = md5($field);
 			$fieldname = "postfield_fields_1{$control_id}";
-			$customfield = $postfields->append(FormControlText::create($fieldname, 'null:null'));
+			$customfield = $postfields->append(FormControlLabel::wrap($fields[0], FormControlText::create($fieldname, 'null:null')));
 			$customfield->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
 			$customfield->template = 'tabcontrol_text';
 		}
