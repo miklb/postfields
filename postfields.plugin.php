@@ -105,13 +105,13 @@ class PostFields	 extends Plugin
 	*/
 	public function action_publish_post($post, $form)
 	{
-		$fields = Options::get('postfields__fields_1' . $post->content_type);
+		$fields = Options::get('postfields__fields_' . $post->content_type);
 		if(!is_array($fields) || count($fields) == 0) {
 			return;
 		}
 		foreach($fields as $field) {
 			$control_id = md5($field);
-			$fieldname = "postfield_1{$control_id}";
+			$fieldname = "postfield_fields_1{$control_id}";
 			$customfield = $form->$fieldname;
 			$post->info->{$field} = $customfield->value;
 		}
@@ -124,7 +124,7 @@ class PostFields	 extends Plugin
 		$types = Post::list_active_post_types();
 		unset($types['any']);
 		foreach($types as $type => $id) {
-			$fields = Options::get('postfields__fields_1' . $id);
+			$fields = Options::get('postfields__fields_' . $id);
 			if(!is_array($fields) || count($fields) == 0) {
 				continue;
 			}
@@ -133,7 +133,7 @@ class PostFields	 extends Plugin
 				$fieldlist[] = "'" . addslashes($field) . "'";
 			}
 			$fieldlist = implode(', ', $fieldlist);
-			$cases_form .= "\t\t\tcase {$id}:\n\t\t\t\t\$fields = array({$fieldlist});\n\t\t\t\tbreak;\n";
+			$cases_form .= "\t\t\tcase {$id}:\n\t\t\t\t$fields = array({$fieldlist});\n\t\t\t\tbreak;\n";
 		}
 
 		$code = <<< PLUGIN_CODE_1
@@ -141,22 +141,22 @@ class PostFields	 extends Plugin
 	/**
 	* Add additional controls to the publish page tab
 	*
-	* @param FormUI \$form The form that is used on the publish page
-	* @param Post \$post The post being edited
+	* @param FormUI $form The form that is used on the publish page
+	* @param Post $post The post being edited
 	**/
-	public function action_form_publish(\$form, \$post)
+	public function action_form_publish($form, $post)
 	{
-		switch(\$post->content_type) {
+		switch($post->content_type) {
 			{$cases_form}
 			default:
 				return;
 		}
-		foreach(\$fields as \$field) {
-			\$control_id = md5(\$field);
-			\$fieldname = "postfield_{\$control_id}";
-			\$customfield = \$postfields->append('text', \$fieldname, 'null:null', \$field);
-			\$customfield->value = isset(\$post->info->{\$field}) ? \$post->info->{\$field} : '';
-			\$customfield->template = 'tabcontrol_text';
+		foreach($fields as $field) {
+			$control_id = md5($field);
+			$fieldname = "postfield_fields_{$control_id}";
+			$customfield = $postfields->append('text', $fieldname, 'null:null', $field);
+			$customfield->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
+			$customfield->template = 'tabcontrol_text';
 		}
 	}
 
@@ -164,21 +164,21 @@ class PostFields	 extends Plugin
 	/**
 	* Modify a post before it is updated
 	*
-	* @param Post \$post The post being saved, by reference
-	* @param FormUI \$form The form that was submitted on the publish page
+	* @param Post $post The post being saved, by reference
+	* @param FormUI $form The form that was submitted on the publish page
 	*/
-	public function action_publish_post(\$post, \$form)
+	public function action_publish_post($post, $form)
 	{
-		switch(\$post->content_type) {
+		switch($post->content_type) {
 			{$cases_form}
 			default:
 				return;
 		}
-		foreach(\$fields as \$field) {
-			\$control_id = md5(\$field);
-			\$fieldname = "postfield_{\$control_id}";
-			\$customfield = \$form->\$fieldname;
-			\$post->info->{\$field} = \$customfield->value;
+		foreach($fields as $field) {
+			$control_id = md5($field);
+			$fieldname = "postfield_{$control_id}";
+			$customfield = $form->$fieldname;
+			$post->info->{$field} = $customfield->value;
 		}
 	}
 
