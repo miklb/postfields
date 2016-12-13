@@ -90,8 +90,8 @@ class PostFields extends Plugin
 		foreach($fields as $field) {
 			$control_id = md5($field);
 			$fieldname = "postfield_{$control_id}";
-			$customfield = $postfields->append(FormControlLabel::wrap($field, FormControlText::create($field, 'null:null')));
-			$customfield->$field->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
+			$customfield = $postfields->append(FormControlLabel::wrap($field, FormControlText::create($field, 'null:null')->set_value($post->info->{$field})));
+			$customfield->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
 		}
 	}
 
