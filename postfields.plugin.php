@@ -86,13 +86,12 @@ class PostFields extends Plugin
 		}
 		$output = '';
 		$control_id = 0;
-		$postfields = $form->publish_controls->append( FormControlFieldset::create('postfields_fields_1')->set_caption(_t( 'Additional Fields' )) );
+		$postfields = $form->publish_controls->append( FormControlFieldset::create('postfields__fields_1')->set_caption(_t( 'Additional Fields' )) );
 		foreach($fields as $field) {
 			$control_id = md5($field);
 			$fieldname = "postfield_fields_1{$control_id}";
 			$customfield = $postfields->append(FormControlLabel::wrap($field, FormControlText::create($fieldname, 'null:null')));
 			$customfield->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
-			$customfield->template = 'tabcontrol_text';
 		}
 	}
 
