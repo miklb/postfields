@@ -4,7 +4,7 @@ namespace Habari;
 * Post Fields - A plugin to display additional fields on the publish page
 * @package postfields
 **/
-class PostFields	 extends Plugin
+class PostFields extends Plugin
 {
 
 
@@ -86,7 +86,7 @@ class PostFields	 extends Plugin
 		}
 		$output = '';
 		$control_id = 0;
-		$postfields = $form->publish_controls->append( FormControlFieldset::create('postfields_1')->set_caption(_t( 'Additional Fields' )) );
+		$postfields = $form->publish_controls->append( FormControlFieldset::create('postfields_fields_1')->set_caption(_t( 'Additional Fields' )) );
 		foreach($fields as $field) {
 			$control_id = md5($field);
 			$fieldname = "postfield_fields_1{$control_id}";
@@ -124,7 +124,7 @@ class PostFields	 extends Plugin
 		$types = Post::list_active_post_types();
 		unset($types['any']);
 		foreach($types as $type => $id) {
-			$fields = Options::get('postfields__fields_' . $id);
+			$fields = Options::get('postfields__fields_1' . $id);
 			if(!is_array($fields) || count($fields) == 0) {
 				continue;
 			}
@@ -135,60 +135,7 @@ class PostFields	 extends Plugin
 			$fieldlist = implode(', ', $fieldlist);
 			$cases_form .= "\t\t\tcase {$id}:\n\t\t\t\t$fields = array({$fieldlist});\n\t\t\t\tbreak;\n";
 		}
-
-		$code = <<< PLUGIN_CODE_1
-
-	/**
-	* Add additional controls to the publish page tab
-	*
-	* @param FormUI $form The form that is used on the publish page
-	* @param Post $post The post being edited
-	**/
-	public function action_form_publish($form, $post)
-	{
-		switch($post->content_type) {
-			{$cases_form}
-			default:
-				return;
-		}
-		foreach($fields as $field) {
-			$control_id = md5($field);
-			$fieldname = "postfield_fields_{$control_id}";
-			$customfield = $postfields->append('text', $fieldname, 'null:null', $field);
-			$customfield->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
-			$customfield->template = 'tabcontrol_text';
-		}
 	}
-
-
-	/**
-	* Modify a post before it is updated
-	*
-	* @param Post $post The post being saved, by reference
-	* @param FormUI $form The form that was submitted on the publish page
-	*/
-	public function action_publish_post($post, $form)
-	{
-		switch($post->content_type) {
-			{$cases_form}
-			default:
-				return;
-		}
-		foreach($fields as $field) {
-			$control_id = md5($field);
-			$fieldname = "postfield_{$control_id}";
-			$customfield = $form->$fieldname;
-			$post->info->{$field} = $customfield->value;
-		}
-	}
-
-PLUGIN_CODE_1;
-
-		return $code;
-	}
-
-
-
 
 }
 ?>
