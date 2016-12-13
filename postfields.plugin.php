@@ -65,7 +65,7 @@ class PostFields extends Plugin
 
 					$ui = new FormUI('postfields');
 					$ui->append('static', 'typelabel', _t('Adding fields to the "%s" post type.', array($types[$key])));
-					$ui->append(\Habari\FormControlTextmulti::create('fields', 'postfields__fields_1')->label('Additional Fields:'));
+					$ui->append(\Habari\FormControlTextmulti::create('fields', 'postfields__fields_' . $key)->label('Additional Fields:'));
 					$ui->append('submit', 'submit', 'Submit');
 					$ui->out();
 			}
@@ -86,12 +86,12 @@ class PostFields extends Plugin
 		}
 		$output = '';
 		$control_id = 0;
-		$postfields = $form->publish_controls->append( FormControlFieldset::create('postfields__fields_1')->set_caption(_t( 'Additional Fields' )) );
+		$postfields = $form->publish_controls->append( FormControlFieldset::create('postfields')->set_caption(_t( 'Additional Fields' )) );
 		foreach($fields as $field) {
 			$control_id = md5($field);
-			$fieldname = "postfield_fields_1{$control_id}";
-			$customfield = $postfields->append(FormControlLabel::wrap($field, FormControlText::create($fieldname, 'null:null')));
-			$customfield->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
+			$fieldname = "postfield_{$control_id}";
+			$customfield = $postfields->append(FormControlLabel::wrap($field, FormControlText::create($field, 'null:null')));
+			$customfield->$field->value = isset($post->info->{$field}) ? $post->info->{$field} : '';
 		}
 	}
 
@@ -110,9 +110,9 @@ class PostFields extends Plugin
 		}
 		foreach($fields as $field) {
 			$control_id = md5($field);
-			$fieldname = "postfield_fields_1{$control_id}";
-			$customfield = $form->$fieldname;
-			$post->info->{$field} = $customfield->value;
+			$fieldname = "postfield_{$control_id}";
+			$customfield = $form->$field;
+			$post->info->{$field} = $form->$field->value;
 		}
 	}
 
@@ -123,7 +123,7 @@ class PostFields extends Plugin
 		$types = Post::list_active_post_types();
 		unset($types['any']);
 		foreach($types as $type => $id) {
-			$fields = Options::get('postfields__fields_1' . $id);
+			$fields = Options::get('postfields__fields_' . $id);
 			if(!is_array($fields) || count($fields) == 0) {
 				continue;
 			}
